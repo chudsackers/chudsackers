@@ -286,8 +286,7 @@
   async function loadData() {
     setDot('loading');
     try {
-      const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(SHEET_URL);
-      const res = await fetch(proxy);
+      const res = await fetch(SHEET_URL);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const players = parseCSV(await res.text());
       if (!players.length) throw new Error('No rows — check column names');
