@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>chudsackers — tiers</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #070709; color: #fff; font-family: 'DM Sans', system-ui, sans-serif; min-height: 100vh; padding: 2.5rem 1.5rem 6rem; }
+  .wrap { max-width: 600px; margin: 0 auto; }
+
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+  .nav-link { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #333; text-decoration: none; transition: color .15s; }
+  .nav-link:hover { color: #39ff85; text-shadow: 0 0 8px rgba(57,255,133,.6); }
+  .sync-time { font-size: 11px; color: #333; display: flex; align-items: center; gap: 6px; }
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .sync-dot.ok      { background: #39ff85; box-shadow: 0 0 6px #39ff85, 0 0 14px rgba(57,255,133,.5); }
+  .sync-dot.loading { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; animation: pulse 1.2s ease-in-out infinite; }
+  .sync-dot.err     { background: #ff4040; box-shadow: 0 0 6px #ff4040; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.15} }
+
+  .tiers { display: flex; flex-direction: column; gap: 6px; }
+
+  .tier-row {
+    display: flex;
+    align-items: stretch;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #1a1a22;
+    min-height: 60px;
+  }
+
+  .tier-label {
+    width: 54px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+
+  .tier-row[data-tier="S"] .tier-label { background: #160808; color: #ff4040; text-shadow: 0 0 12px rgba(255,64,64,1), 0 0 28px rgba(255,64,64,.5); }
+  .tier-row[data-tier="A"] .tier-label { background: #150f00; color: #f59e0b; text-shadow: 0 0 12px rgba(245,158,11,.9), 0 0 26px rgba(245,158,11,.4); }
+  .tier-row[data-tier="B"] .tier-label { background: #081508; color: #39ff85; text-shadow: 0 0 12px rgba(57,255,133,.9), 0 0 26px rgba(57,255,133,.4); }
+  .tier-row[data-tier="C"] .tier-label { background: #080f18; color: #4da6ff; text-shadow: 0 0 12px rgba(77,166,255,.9), 0 0 26px rgba(77,166,255,.4); }
+  .tier-row[data-tier="D"] .tier-label { background: #0f0818; color: #a78bfa; text-shadow: 0 0 12px rgba(167,139,250,.8), 0 0 24px rgba(167,139,250,.3); }
+  .tier-row[data-tier="F"] .tier-label { background: #0e0e10; color: #383840; }
+
+  .tier-slots {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    background: #0a0a0e;
+  }
+
+  .chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #111118;
+    border: 1px solid #1e1e2a;
+    border-radius: 20px;
+    padding: 5px 11px 5px 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #999;
+    white-space: nowrap;
+  }
+
+  .chip-avatar {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 500; flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  /* per-tier chip glow */
+  .tier-row[data-tier="S"] .chip { border-color: rgba(255,64,64,.2); color: #ff8080; }
+  .tier-row[data-tier="A"] .chip { border-color: rgba(245,158,11,.2); color: #f5be6b; }
+  .tier-row[data-tier="B"] .chip { border-color: rgba(57,255,133,.2); color: #39ff85; }
+  .tier-row[data-tier="C"] .chip { border-color: rgba(77,166,255,.2); color: #7dc2ff; }
+  .tier-row[data-tier="D"] .chip { border-color: rgba(167,139,250,.2); color: #c4b1fc; }
+  .tier-row[data-tier="F"] .chip { border-color: #1e1e22; color: #444; }
+
+  .empty { font-size: 12px; color: #1e1e24; font-style: italic; }
+
+  .no-data { padding: 4rem; text-align: center; color: #222; font-size: 13px; }
+  footer { margin-top: 1rem; font-size: 10px; color: #1e1e1e; text-align: right; letter-spacing: 1px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a href="index.html" class="nav-link">← Leaderboard</a>
+    <div class="sync-time">
+      <span class="sync-dot loading" id="syncDot"></span>
+      <span id="syncTime">Loading…</span>
+    </div>
+  </div>
+
+  <div class="tiers" id="tiers">
+    <div class="no-data">Loading…</div>
+  </div>
+
+  <footer>Refreshes every 60 seconds</footer>
+</div>
+
+<script>
+  // ============================================================
+  // This reads from a second tab called "Tiers" in your sheet.
+  // To get this URL: File → Share → Publish to web →
+  //   choose the "Tiers" tab → CSV → Publish → copy URL
+  // ============================================================
+  const TIERS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSfL0GeTO0Bdsf96gm7bX_bhIeVPK9T6V4WZ_Ya_dhsn-D8MKB4Pgjzt-2FpZRy1xjhB-BNUhiV_uLG/pub?gid=REPLACE_WITH_TIERS_TAB_GID&single=true&output=csv";
+
+  const REFRESH_INTERVAL = 60000;
+  const TIER_ORDER = ['S','A','B','C','D','F'];
+
+  const AVATAR_PALETTES = [
+    ["#0d1f0d","#39ff85"],["#1a0d0d","#ff6060"],["#0d0d1f","#4da6ff"],
+    ["#1a1000","#f59e0b"],["#150d1f","#a78bfa"],["#0d1a18","#2dd4bf"],
+  ];
+  function avatarStyle(name) {
+    const i = (name.charCodeAt(0)+(name.charCodeAt(1)||0)) % AVATAR_PALETTES.length;
+    const [bg,fg] = AVATAR_PALETTES[i];
+    return `background:${bg};color:${fg}`;
+  }
+  function initials(name) { return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+
+  function parseCSV(text) {
+    const lines = text.trim().split('\n');
+    if (lines.length < 2) return [];
+    const headers = lines[0].split(',').map(h=>h.replace(/"/g,'').trim().toLowerCase());
+    return lines.slice(1).map(line => {
+      const vals=[]; let cur='',inQ=false;
+      for (let ch of line) {
+        if (ch==='"'){inQ=!inQ;continue;}
+        if (ch===','&&!inQ){vals.push(cur.trim());cur='';continue;}
+        cur+=ch;
+      }
+      vals.push(cur.trim());
+      const obj={}; headers.forEach((h,i)=>obj[h]=vals[i]||'');
+      return { name:obj['player']||obj['name']||'', tier:(obj['tier']||'').toUpperCase().trim() };
+    }).filter(p=>p.name && TIER_ORDER.includes(p.tier));
+  }
+
+  function render(entries) {
+    const container = document.getElementById('tiers');
+    if (!entries.length) {
+      container.innerHTML = '<div class="no-data">No tier data found — check your Tiers tab has columns: Player, Tier</div>';
+      return;
+    }
+
+    const grouped = {};
+    TIER_ORDER.forEach(t => grouped[t] = []);
+    entries.forEach(e => { if (grouped[e.tier]) grouped[e.tier].push(e.name); });
+
+    container.innerHTML = TIER_ORDER.map(tier => {
+      const players = grouped[tier];
+      const chips = players.length
+        ? players.map(name => `
+            <div class="chip">
+              <div class="chip-avatar" style="${avatarStyle(name)}">${initials(name)}</div>
+              ${name}
+            </div>`).join('')
+        : '<span class="empty">empty</span>';
+      return `
+        <div class="tier-row" data-tier="${tier}">
+          <div class="tier-label">${tier}</div>
+          <div class="tier-slots">${chips}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function setDot(s) { document.getElementById('syncDot').className='sync-dot '+s; }
+
+  async function loadData() {
+    setDot('loading');
+    try {
+      const res = await fetch(TIERS_URL);
+      if (!res.ok) throw new Error('HTTP '+res.status);
+      const entries = parseCSV(await res.text());
+      render(entries);
+      setDot('ok');
+      document.getElementById('syncTime').textContent = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    } catch(e) {
+      setDot('err');
+      document.getElementById('syncTime').textContent = 'Error: '+e.message;
+    }
+  }
+
+  loadData();
+  setInterval(loadData, REFRESH_INTERVAL);
+</script>
+</body>
+</html>
