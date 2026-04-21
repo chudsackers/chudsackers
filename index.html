@@ -7,172 +7,57 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    background: #070709;
-    color: #fff;
-    font-family: 'DM Sans', system-ui, sans-serif;
-    min-height: 100vh;
-    padding: 2.5rem 1.5rem 6rem;
-  }
-
+  body { background: #070709; color: #fff; font-family: 'DM Sans', system-ui, sans-serif; min-height: 100vh; padding: 2.5rem 1.5rem 6rem; }
   .wrap { max-width: 600px; margin: 0 auto; }
 
-  /* SYNC LINE */
-  .topbar {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-  .sync-time { font-size: 11px; color: #333; display: flex; align-items: center; gap: 6px; letter-spacing: .5px; }
-  .sync-dot  { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  .nav-link { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #333; text-decoration: none; transition: color .15s; }
+  .nav-link:hover { color: #39ff85; text-shadow: 0 0 8px rgba(57,255,133,.6); }
+  .sync-time { font-size: 11px; color: #333; display: flex; align-items: center; gap: 6px; }
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
   .sync-dot.ok      { background: #39ff85; box-shadow: 0 0 6px #39ff85, 0 0 14px rgba(57,255,133,.5); }
   .sync-dot.loading { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; animation: pulse 1.2s ease-in-out infinite; }
   .sync-dot.err     { background: #ff4040; box-shadow: 0 0 6px #ff4040; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.15} }
 
-  /* SUMMARY */
-  .summary {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 1.25rem;
-  }
+  .summary { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 1.25rem; }
   @media(max-width:480px){ .summary { grid-template-columns: repeat(2,1fr); } }
-
-  .scard {
-    background: #0c0c10;
-    border: 1px solid #1c1c24;
-    border-radius: 10px;
-    padding: .8rem 1rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .scard::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 10px;
-    box-shadow: inset 0 0 20px rgba(57,255,133,.03);
-    pointer-events: none;
-  }
-  .scard-val {
-    font-size: 1.6rem;
-    font-weight: 500;
-    line-height: 1;
-    color: #fff;
-  }
+  .scard { background: #0c0c10; border: 1px solid #1c1c24; border-radius: 10px; padding: .8rem 1rem; text-align: center; }
+  .scard-val { font-size: 1.6rem; font-weight: 500; line-height: 1; color: #fff; }
   .scard-val.g { color: #39ff85; text-shadow: 0 0 12px rgba(57,255,133,.8), 0 0 30px rgba(57,255,133,.3); }
-  .scard-lbl {
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: #333;
-    margin-top: 4px;
-  }
+  .scard-lbl { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #333; margin-top: 4px; }
 
-  /* TABLE */
-  .table-wrap {
-    background: #0a0a0e;
-    border: 1px solid #1a1a22;
-    border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 0 40px rgba(57,255,133,.04), 0 0 80px rgba(57,255,133,.02);
-  }
-
+  .table-wrap { background: #0a0a0e; border: 1px solid #1a1a22; border-radius: 14px; overflow: hidden; box-shadow: 0 0 40px rgba(57,255,133,.04); }
   table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-  col.c-rank { width: 44px; }
-  col.c-name { width: auto; }
-  col.c-num  { width: 95px; }
-
+  col.c-rank { width: 44px; } col.c-name { width: auto; } col.c-num { width: 95px; }
   thead tr { border-bottom: 1px solid #141418; }
-  th {
-    padding: 11px 14px;
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #2a2a35;
-    font-weight: 500;
-    text-align: right;
-  }
+  th { padding: 11px 14px; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #2a2a35; font-weight: 500; text-align: right; }
   th:first-child, th:nth-child(2) { text-align: left; }
-
-  tbody tr {
-    border-bottom: 1px solid #0f0f14;
-    transition: background .15s;
-  }
+  tbody tr { border-bottom: 1px solid #0f0f14; transition: background .15s; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: #0e0e14; }
-
-  tbody tr:first-child td .name-txt {
-    color: #fff;
-    text-shadow: 0 0 16px rgba(57,255,133,.5);
-  }
-
-  td {
-    padding: 13px 14px;
-    font-size: 14px;
-    text-align: right;
-    color: #555;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+  tbody tr:first-child .name-txt { color: #fff; text-shadow: 0 0 16px rgba(57,255,133,.5); }
+  td { padding: 13px 14px; font-size: 14px; text-align: right; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   td:first-child, td:nth-child(2) { text-align: left; }
 
-  .rank-num {
-    font-size: 12px;
-    font-weight: 500;
-    color: #222;
-    display: inline-block;
-    width: 20px;
-    text-align: center;
-  }
-  .rank-num.r1 {
-    color: #39ff85;
-    text-shadow: 0 0 8px rgba(57,255,133,1), 0 0 20px rgba(57,255,133,.6);
-    font-size: 14px;
-  }
+  .rank-num { font-size: 12px; font-weight: 500; color: #222; display: inline-block; width: 20px; text-align: center; }
+  .rank-num.r1 { color: #39ff85; text-shadow: 0 0 8px rgba(57,255,133,1), 0 0 20px rgba(57,255,133,.6); font-size: 14px; }
   .rank-num.r2 { color: #666; }
   .rank-num.r3 { color: #444; }
 
   .name-cell { display: flex; align-items: center; gap: 9px; }
-  .avatar {
-    width: 26px; height: 26px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 9px; font-weight: 500; flex-shrink: 0;
-    text-transform: uppercase;
-  }
+  .avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; flex-shrink: 0; text-transform: uppercase; }
   .name-txt { font-weight: 500; color: #999; font-size: 14px; }
-
-  .wins-val {
-    font-weight: 500;
-    color: #39ff85;
-    text-shadow: 0 0 8px rgba(57,255,133,.9), 0 0 20px rgba(57,255,133,.4);
-  }
-  .elims-val {
-    color: #ff4040;
-    text-shadow: 0 0 8px rgba(255,64,64,.8), 0 0 18px rgba(255,64,64,.3);
-  }
-
+  .wins-val  { font-weight: 500; color: #39ff85; text-shadow: 0 0 8px rgba(57,255,133,.9), 0 0 20px rgba(57,255,133,.4); }
+  .elims-val { color: #ff4040; text-shadow: 0 0 8px rgba(255,64,64,.8), 0 0 18px rgba(255,64,64,.3); }
   .no-data { padding: 4rem; text-align: center; color: #222; font-size: 13px; }
-
-  footer {
-    margin-top: .9rem;
-    font-size: 10px;
-    color: #1e1e1e;
-    text-align: right;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
+  footer { margin-top: .9rem; font-size: 10px; color: #1e1e1e; text-align: right; letter-spacing: 1px; text-transform: uppercase; }
 </style>
 </head>
 <body>
 <div class="wrap">
-
   <div class="topbar">
+    <a href="/chudsackers/tierlist" class="nav-link">Tier list →</a>
     <div class="sync-time">
       <span class="sync-dot loading" id="syncDot"></span>
       <span id="syncTime">Loading…</span>
@@ -189,23 +74,12 @@
   <div class="table-wrap">
     <table>
       <colgroup><col class="c-rank"><col class="c-name"><col class="c-num"><col class="c-num"></colgroup>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Player</th>
-          <th>Wins</th>
-          <th>Eliminations</th>
-        </tr>
-      </thead>
-      <tbody id="tbody">
-        <tr><td colspan="4" class="no-data">Loading…</td></tr>
-      </tbody>
+      <thead><tr><th>#</th><th>Player</th><th>Wins</th><th>Eliminations</th></tr></thead>
+      <tbody id="tbody"><tr><td colspan="4" class="no-data">Loading…</td></tr></tbody>
     </table>
   </div>
-
   <footer>Refreshes every 60 seconds</footer>
 </div>
-
 <script>
   const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSfL0GeTO0Bdsf96gm7bX_bhIeVPK9T6V4WZ_Ya_dhsn-D8MKB4Pgjzt-2FpZRy1xjhB-BNUhiV_uLG/pub?gid=0&single=true&output=csv";
   const REFRESH_INTERVAL = 60000;
@@ -214,88 +88,64 @@
     ["#0d1f0d","#39ff85"],["#1a0d0d","#ff6060"],["#0d0d1f","#4da6ff"],
     ["#1a1000","#f59e0b"],["#150d1f","#a78bfa"],["#0d1a18","#2dd4bf"],
   ];
-
   function avatarStyle(name) {
-    const i = (name.charCodeAt(0) + (name.charCodeAt(1) || 0)) % AVATAR_PALETTES.length;
-    const [bg, fg] = AVATAR_PALETTES[i];
+    const i = (name.charCodeAt(0) + (name.charCodeAt(1)||0)) % AVATAR_PALETTES.length;
+    const [bg,fg] = AVATAR_PALETTES[i];
     return `background:${bg};color:${fg}`;
   }
-
-  function initials(name) {
-    return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  }
+  function initials(name) { return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
 
   function parseCSV(text) {
     const lines = text.trim().split('\n');
     if (lines.length < 2) return [];
-    const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim().toLowerCase());
+    const headers = lines[0].split(',').map(h=>h.replace(/"/g,'').trim().toLowerCase());
     return lines.slice(1).map(line => {
-      const vals = [];
-      let cur = '', inQ = false;
+      const vals = []; let cur='', inQ=false;
       for (let ch of line) {
-        if (ch === '"') { inQ = !inQ; continue; }
-        if (ch === ',' && !inQ) { vals.push(cur.trim()); cur = ''; continue; }
-        cur += ch;
+        if (ch==='"'){inQ=!inQ;continue;}
+        if (ch===','&&!inQ){vals.push(cur.trim());cur='';continue;}
+        cur+=ch;
       }
       vals.push(cur.trim());
-      const obj = {};
-      headers.forEach((h, i) => obj[h] = vals[i] || '');
-      return {
-        name:         obj['name'] || 'Unknown',
-        wins:         parseInt(obj['wins']) || 0,
-        eliminations: parseInt(obj['eliminations']) || 0,
-      };
-    }).filter(p => p.name && p.name !== 'Unknown');
+      const obj={}; headers.forEach((h,i)=>obj[h]=vals[i]||'');
+      return { name:obj['name']||'Unknown', wins:parseInt(obj['wins'])||0, eliminations:parseInt(obj['eliminations'])||0 };
+    }).filter(p=>p.name&&p.name!=='Unknown');
   }
 
   function render(players) {
-    const sorted = [...players].sort((a, b) => b.wins - a.wins);
+    const sorted = [...players].sort((a,b) => b.wins!==a.wins ? b.wins-a.wins : b.eliminations-a.eliminations);
     const tbody = document.getElementById('tbody');
-
-    if (!sorted.length) {
-      tbody.innerHTML = '<tr><td colspan="4" class="no-data">No players found</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = sorted.map((p, i) => {
-      const rc = i === 0 ? 'r1' : i === 1 ? 'r2' : i === 2 ? 'r3' : '';
+    if (!sorted.length) { tbody.innerHTML='<tr><td colspan="4" class="no-data">No players found</td></tr>'; return; }
+    tbody.innerHTML = sorted.map((p,i) => {
+      const rc = i===0?'r1':i===1?'r2':i===2?'r3':'';
       return `<tr>
-        <td><span class="rank-num ${rc}">${i + 1}</span></td>
-        <td><div class="name-cell">
-          <div class="avatar" style="${avatarStyle(p.name)}">${initials(p.name)}</div>
-          <span class="name-txt">${p.name}</span>
-        </div></td>
+        <td><span class="rank-num ${rc}">${i+1}</span></td>
+        <td><div class="name-cell"><div class="avatar" style="${avatarStyle(p.name)}">${initials(p.name)}</div><span class="name-txt">${p.name}</span></div></td>
         <td><span class="wins-val">${p.wins}</span></td>
         <td><span class="elims-val">${p.eliminations}</span></td>
       </tr>`;
     }).join('');
-
-    const totalWins  = sorted.reduce((s, p) => s + p.wins, 0);
-    const totalElims = sorted.reduce((s, p) => s + p.eliminations, 0);
     document.getElementById('s-players').textContent = sorted.length;
-    document.getElementById('s-wins').textContent    = totalWins;
-    document.getElementById('s-elims').textContent   = totalElims;
-    document.getElementById('s-leader').textContent  = sorted[0] ? sorted[0].name : '—';
+    document.getElementById('s-wins').textContent    = sorted.reduce((s,p)=>s+p.wins,0);
+    document.getElementById('s-elims').textContent   = sorted.reduce((s,p)=>s+p.eliminations,0);
+    document.getElementById('s-leader').textContent  = sorted[0]?sorted[0].name:'—';
   }
 
-  function setDot(state) {
-    document.getElementById('syncDot').className = 'sync-dot ' + state;
-  }
+  function setDot(s) { document.getElementById('syncDot').className='sync-dot '+s; }
 
   async function loadData() {
     setDot('loading');
     try {
       const res = await fetch(SHEET_URL);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      if (!res.ok) throw new Error('HTTP '+res.status);
       const players = parseCSV(await res.text());
-      if (!players.length) throw new Error('No rows — check column names');
+      if (!players.length) throw new Error('No rows');
       render(players);
       setDot('ok');
-      document.getElementById('syncTime').textContent =
-        new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } catch (e) {
+      document.getElementById('syncTime').textContent = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    } catch(e) {
       setDot('err');
-      document.getElementById('syncTime').textContent = 'Error: ' + e.message;
+      document.getElementById('syncTime').textContent = 'Error: '+e.message;
     }
   }
 
